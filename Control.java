@@ -1,5 +1,5 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license.
  * Click nbfs://nbhost/SystemFileSystem/Templates/Project/Maven2/JavaApp/src/main/java/${packagePath}/${mainClassName}.java to edit this template
  */
 
@@ -12,33 +12,33 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
+import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  *
  * @author yuri
  */
 public class Control {
-
+    
     public static void main(String[] args) throws UnknownHostException, IOException {
         
-            String ip = "192.168.15.45";
-        
-            InetAddress adress = InetAddress.getByName(ip);
-            System.out.println("Enviando ping para " + ip);
-            if(adress.isReachable(2000)){
-            
-                System.out.println("Host encontrado");
-            
-            }
-            else{
-            
-                System.out.println("Não foi possível chegar no host");
-            
-            }
-        
-        
-        
-        Enumeration<NetworkInterface> nets = null;
+        int delay = 0;   // tempo de espera antes da 1ª execução da tarefa.
+        int interval = 60000;  // intervalo no qual a tarefa será executada.
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+          public void run() { 
+              try {
+                Ping.execute("192.168.1.127");
+              } catch (Exception ex) {
+                  System.out.println("Erro interno");
+              }
+          }
+        }, delay, interval);
+   
+      
+        /*Enumeration<NetworkInterface> nets = null;
         try {
             nets = NetworkInterface.getNetworkInterfaces();
         } catch (SocketException ex) {
@@ -70,6 +70,6 @@ public class Control {
             
             
             
-        }   
+        }   */
     }
 }

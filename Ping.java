@@ -13,6 +13,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 import javax.swing.JOptionPane;
 
@@ -21,23 +24,29 @@ import javax.swing.JOptionPane;
  * @author yuri
  */
 public class Ping {
+    String ip = "192.168.15.45";
     public static void execute(String ip) throws UnknownHostException, IOException {
         String status = "";
         Connection con;
+
+
+
         System.out.println("Enviando ping para " + ip);
         if(InetAddress.getByName(ip).isReachable(2000)){
             System.out.println("Host encontrado!");
             status = "Host encontrado!";
+            /*Insere dados BD*/
         }
         else{
             System.out.println("Não foi possível chegar no host");
             status = "Não foi possível chegar no host!";
+            
         }
         
         
     }
     
-    public Connection insertData() throws SQLException{
+    public Connection connectBD() throws SQLException{
     
     
         Connection con = null;
@@ -55,13 +64,34 @@ public class Ping {
         
         }
         return con;
-        
-        
-        
-
-
     }
-        
+    
+    
+   public void insertData() throws SQLException{
+        Date dataHoraAtual = new Date();
+        String data = new SimpleDateFormat("dd/MM/yyyy").format(dataHoraAtual);
+        String hora = new SimpleDateFormat("HH:mm:ss").format(dataHoraAtual);      
+        Ping p1 = new Ping();
+
+        String sql = "INSERT INTO Pinger(Dia,Hora, IP_ping) VALUES(?,?,?)";
+
+        try {
+            PreparedStatement stmt = con.prepareStatement(sql);
+
+            stmt.setString(1, data);
+            stmt.setString(2, hora);
+            stmt.setString(2, p1.ip);
+
+
+            stmt.execute(); 
+            stmt.close();
+
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+   
+   }
     
  
-}
+

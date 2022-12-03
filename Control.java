@@ -27,10 +27,12 @@ public class Control {
         int delay = 0;   // tempo de espera antes da 1ª execução da tarefa.
         int interval = 60000;  // intervalo no qual a tarefa será executada.
         Timer timer = new Timer();
+        Ping p = new Ping();
+        p.ip = "192.168.15.45";
         timer.scheduleAtFixedRate(new TimerTask() {
           public void run() { 
               try {
-                Ping.execute("192.168.1.127");
+                Ping.execute(p.ip);
               } catch (Exception ex) {
                   System.out.println("Erro interno");
               }

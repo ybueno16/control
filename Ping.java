@@ -7,20 +7,23 @@ package com.mycompany.control;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.LocalDate;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.time.LocalDate;
+import java.sql.Statement;
 import java.util.Properties;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author yuri
  */
 public class Ping {
-    public static void execute(String ip) throws UnknownHostException, IOException, SQLException {
+    public static void execute(String ip) throws UnknownHostException, IOException {
         String status = "";
+        Connection con;
         System.out.println("Enviando ping para " + ip);
         if(InetAddress.getByName(ip).isReachable(2000)){
             System.out.println("Host encontrado!");
@@ -30,19 +33,35 @@ public class Ping {
             System.out.println("Não foi possível chegar no host");
             status = "Não foi possível chegar no host!";
         }
+        
+        
+    }
+    
+    public Connection insertData() throws SQLException{
+    
+    
+        Connection con = null;
+        
+        try {
+        
+          String url = "jdbc:mysql://localhost:3306/control?user=root&password=Isacreeper1";  
+          con = DriverManager.getConnection(url);
+          
+        } 
+        
+        catch(SQLException e){
+        
+            JOptionPane.showMessageDialog(null,e.getMessage());
+        
+        }
+        return con;
+        
+        
+        
 
-        String url = "jdbc:postgresql://localhost/test";
-        Properties props = new Properties();
-        props.setProperty("user", "fred");
-        props.setProperty("password", "secret");
-        props.setProperty("ssl", "true");
-        Connection conn = DriverManager.getConnection(url, props);
-
-        PreparedStatement st = conn.prepareStatement("INSERT INTO pinger (ip, status) VALUES (?, ?)");
-        st.setString(1, ip);
-        st.setString(2, status);
-        st.executeUpdate();
-        st.close();
 
     }
+        
+    
+ 
 }

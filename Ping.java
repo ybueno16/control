@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
@@ -24,18 +25,17 @@ import javax.swing.JOptionPane;
  * @author yuri
  */
 public class Ping {
+    
     String ip = "192.168.15.45";
     public static void execute(String ip) throws UnknownHostException, IOException {
-        String status = "";
+        String status;
         Connection con;
-
-
-
+        
+        
         System.out.println("Enviando ping para " + ip);
         if(InetAddress.getByName(ip).isReachable(2000)){
             System.out.println("Host encontrado!");
-            status = "Host encontrado!";
-            /*Insere dados BD*/
+            status = "Host encontrado!"; 
         }
         else{
             System.out.println("Não foi possível chegar no host");
@@ -46,52 +46,40 @@ public class Ping {
         
     }
     
-    public Connection connectBD() throws SQLException{
-    
-    
-        Connection con = null;
-        
-        try {
-        
-          String url = "jdbc:mysql://localhost:3306/control?user=root&password=Isacreeper1";  
-          con = DriverManager.getConnection(url);
-          
-        } 
-        
-        catch(SQLException e){
-        
-            JOptionPane.showMessageDialog(null,e.getMessage());
-        
-        }
-        return con;
-    }
-    
-    
-   public void insertData() throws SQLException{
+    public long connectBD() throws SQLException{
         Date dataHoraAtual = new Date();
         String data = new SimpleDateFormat("dd/MM/yyyy").format(dataHoraAtual);
         String hora = new SimpleDateFormat("HH:mm:ss").format(dataHoraAtual);      
         Ping p1 = new Ping();
-
-        String sql = "INSERT INTO Pinger(Dia,Hora, IP_ping) VALUES(?,?,?)";
-
-        try {
-            PreparedStatement stmt = con.prepareStatement(sql);
-
-            stmt.setString(1, data);
-            stmt.setString(2, hora);
-            stmt.setString(2, p1.ip);
-
-
-            stmt.execute(); 
-            stmt.close();
-
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+        long id = 0;
+        String url = "jdbc:mysql://localhost:3306/control";
+        String username = "root";
+        String password = "Isacreeper1";
+        System.out.println("Conectando no Banco de Dados");
+        Connection con = DriverManager.getConnection(url, username, password);
+        String sql = "INSERT INTO pinger(Dia, Hora, IP_ping) VALUES(?, ?, ?)";
+        
+        try(con) {            
+          System.out.println("Conexão estabelecida");
+          PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+          stmt.setString(1, hora);  
+          stmt.setString(2, data); 
+          stmt.setString(3, p1.ip);  
+          int affectedRows = stmt.executeUpdate();
+          if (affectedRows > 0) {
+              try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        id = rs.getLong(1);
+                    }
+                } catch (SQLException ex) {
+                    System.out.println(ex.getMessage());
+                }
             }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
         }
-   
-   }
-    
- 
-
+        return id;
+              
+          
+    }
+} 

@@ -26,7 +26,7 @@ public class Control {
     public static void main(String[] args) throws UnknownHostException, IOException, SQLException {
         
         int delay = 0;   // tempo de espera antes da 1ª execução da tarefa.
-        int interval = 1000;  // intervalo no qual a tarefa será executada.
+        int interval = 10000;  // intervalo no qual a tarefa será executada.
         Timer timer = new Timer();
         Ping p = new Ping();
         p.ip = "192.168.15.45";
@@ -36,13 +36,13 @@ public class Control {
               try {
                 Ping.execute(p.ip);
                 p.connectBD();
+                p.selectData();
               } catch (Exception ex) {
                   System.out.println("Erro interno");
               }
           }
         }, delay, interval);
         
-   
       
         /*Enumeration<NetworkInterface> nets = null;
         try {
